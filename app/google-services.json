@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1025091239890",
+    "project_id": "photoshraringapp",
+    "storage_bucket": "photoshraringapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1025091239890:android:573c33626c0eb22b5e520b",
+        "android_client_info": {
+          "package_name": "com.yusuf.photosharingapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1025091239890-ktogsf1dmb71gl1ci0090jva58tfs2fp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDw0MbUPUYDdyQkDMcLRg-I-tEZ-ll7U7c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1025091239890-ktogsf1dmb71gl1ci0090jva58tfs2fp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
