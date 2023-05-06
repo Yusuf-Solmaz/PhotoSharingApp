@@ -6,15 +6,16 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.yusuf.photosharingapp.databinding.ActivityMainBinding;
+import com.yusuf.photosharingapp.databinding.ActivitySharePhotoBinding;
 
-public class MainActivity extends AppCompatActivity {
+public class SharePhotoActivity extends AppCompatActivity {
 
-    ActivityMainBinding binding;
+    ActivitySharePhotoBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        binding = ActivitySharePhotoBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
 
@@ -22,13 +23,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void signIn(View view){
+
+
+
+    public void share(View view){
 
     }
 
-    public void signUp(View view){
+    public void selectImage(View view){
 
     }
-
-
 }
