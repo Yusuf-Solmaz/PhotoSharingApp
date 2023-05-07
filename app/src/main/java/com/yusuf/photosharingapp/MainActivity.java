@@ -14,13 +14,15 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.yusuf.photosharingapp.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
 
     String emailRegex = "^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$";
     ActivityMainBinding binding;
-    FirebaseAuth auth;
+    private FirebaseAuth auth;
+    private FirebaseFirestore firestore;
 
     String email;
     String password;
@@ -33,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(view);
 
         auth = FirebaseAuth.getInstance();
+        firestore = FirebaseFirestore.getInstance();
+
         binding.registerButton.setVisibility(View.GONE);
         binding.textView3.setVisibility(View.GONE);
 
