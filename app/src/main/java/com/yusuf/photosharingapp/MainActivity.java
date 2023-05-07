@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
-                    String errorMessage = "Bir hata oluştu";
+                    String errorMessage = "There is an error.";
                     if (e instanceof FirebaseAuthException) {
                         FirebaseAuthException authException = (FirebaseAuthException) e;
                         switch (authException.getErrorCode()) {

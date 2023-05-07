@@ -20,12 +20,20 @@ import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.yusuf.photosharingapp.databinding.ActivityMainBinding;
 import com.yusuf.photosharingapp.databinding.ActivitySharePhotoBinding;
+
+import java.util.Random;
+import java.util.UUID;
 
 public class SharePhotoActivity extends AppCompatActivity {
 
@@ -38,7 +46,9 @@ public class SharePhotoActivity extends AppCompatActivity {
     private FirebaseFirestore firestore;
 
     private FirebaseAuth auth;
+    private StorageReference storageReference;
 
+    Uri imageUri;
     //Bitmap selectedImage;
 
 
@@ -52,6 +62,8 @@ public class SharePhotoActivity extends AppCompatActivity {
         firestore=FirebaseFirestore.getInstance();
         storage = FirebaseStorage.getInstance();
         auth = FirebaseAuth.getInstance();
+        storageReference = storage.getReference();
+
 
         registerLauncher();
     }
@@ -62,6 +74,37 @@ public class SharePhotoActivity extends AppCompatActivity {
 
     public void share(View view){
 
+        UUID uuid = UUID.randomUUID();
+        String imageName = "images/"+uuid+".jpg";
+
+        if (imageUri != null){
+            storageReference.child(imageName).putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    Toast.makeText(SharePhotoActivity.this,"Shared.",Toast.LENGTH_LONG).show();
+
+                    StorageReference newStorageReference = storage.getReference(imageName);
+                    newStorageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+
+                            String imageUrl = uri.toString();
+                            String comment = binding.descriptionText.getText().toString();
+                        }
+                    });
+
+
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(SharePhotoActivity.this,"There is an error.",Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+        else {
+            Toast.makeText(SharePhotoActivity.this,"Images can not be empty.",Toast.LENGTH_LONG).show();
+        }
     }
 
     public void selectImage(View view){
@@ -112,7 +155,7 @@ public class SharePhotoActivity extends AppCompatActivity {
                 if (result.getResultCode() == RESULT_OK){
                     Intent intentFromData = result.getData();
                     if (intentFromData != null){
-                        Uri imageUri = intentFromData.getData();
+                        imageUri = intentFromData.getData();
                         binding.imageView.setImageURI(imageUri);
                         /*
                         try {
@@ -152,20 +195,5 @@ public class SharePhotoActivity extends AppCompatActivity {
         });
     }
 
-    public Bitmap toSmallImage(@NonNull Bitmap image, int maxSize){
-        int width = image.getWidth();
-        int height = image.getHeight();
-        float sizeRatio = (float) width/height;
-
-        if (sizeRatio>1){
-            width = maxSize;
-            height = (int) (width/sizeRatio);
-        }
-        else {
-            height = maxSize;
-            width = (int) (height*sizeRatio);
-        }
-        return Bitmap.createScaledBitmap(image,width,height,true);
-    }
 
 }
