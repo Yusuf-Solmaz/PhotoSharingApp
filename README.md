@@ -1,6 +1,7 @@
 # Photo Sharing App
 
-Database: Firebase
+Database: Firebase 
+## 
 Using images with square/picasso
 
 ### Description: It is an application where users can register and login, share pictures and see shared pictures.
