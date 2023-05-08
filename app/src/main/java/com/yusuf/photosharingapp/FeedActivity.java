@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -20,11 +21,14 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.yusuf.photosharingapp.adapter.PostsAdapter;
 import com.yusuf.photosharingapp.databinding.ActivityFeedBinding;
 import com.yusuf.photosharingapp.databinding.ActivityMainBinding;
+import com.yusuf.photosharingapp.model.Post;
 
 import org.checkerframework.checker.units.qual.A;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 public class FeedActivity extends AppCompatActivity {
@@ -33,6 +37,8 @@ public class FeedActivity extends AppCompatActivity {
     FirebaseAuth auth;
     FirebaseFirestore firestore;
 
+    ArrayList<Post> postArrayList;
+PostsAdapter postsAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,10 +46,15 @@ public class FeedActivity extends AppCompatActivity {
         View view = binding.getRoot();
         setContentView(view);
 
+        postArrayList=new ArrayList<>();
+
         auth= FirebaseAuth.getInstance();
         firestore = FirebaseFirestore.getInstance();
-
         getData();
+        binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        postsAdapter = new PostsAdapter(postArrayList);
+        binding.recyclerView.setAdapter(postsAdapter);
+
     }
 
     public void getData(){
@@ -63,15 +74,17 @@ public class FeedActivity extends AppCompatActivity {
                 }
                 if (value != null){
                     for (DocumentSnapshot snapshot : value.getDocuments()){
+
                         Map<String,Object> data = snapshot.getData();
 
                         String name = (String) data.get("name");
-                        String email = (String) data.get("email");
                         String comment = (String) data.get("comment");
                         String url = (String) data.get("imageUrl");
 
-                        System.out.println(name);
+                        Post post = new Post(name,comment,url);
+                        postArrayList.add(post);
                     }
+                    postsAdapter.notifyDataSetChanged();
                 }
             }
         });
