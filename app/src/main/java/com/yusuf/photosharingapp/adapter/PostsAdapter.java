@@ -8,6 +8,7 @@ import android.widget.AdapterView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.squareup.picasso.Picasso;
 import com.yusuf.photosharingapp.databinding.PostRowBinding;
 import com.yusuf.photosharingapp.model.Post;
 
@@ -32,6 +33,7 @@ public class PostsAdapter extends RecyclerView.Adapter<PostsAdapter.PlaceHolder>
     public void onBindViewHolder(@NonNull PlaceHolder holder, int position) {
         holder.binding.recyeclerViewName.setText(posts.get(position).getName());
         holder.binding.recyeclerViewComment.setText(posts.get(position).getComment());
+        Picasso.get().load(posts.get(position).getImageUrl()).into(holder.binding.recyeclerViewImage);
     }
 
     @Override
