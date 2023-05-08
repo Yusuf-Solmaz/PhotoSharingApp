@@ -110,6 +110,7 @@ public class SharePhotoActivity extends AppCompatActivity {
                     newStorageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                         @Override
                         public void onSuccess(Uri uri) {
+                            Toast.makeText(SharePhotoActivity.this,"Shared",Toast.LENGTH_LONG).show();
 
                             String imageUrl = uri.toString();
                             String comment = binding.descriptionText.getText().toString();
@@ -131,7 +132,6 @@ public class SharePhotoActivity extends AppCompatActivity {
                                     .document(user.getUid()).set(post).addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void unused) {
-                                            Toast.makeText(SharePhotoActivity.this,"Shared",Toast.LENGTH_LONG).show();
                                             Intent intent = new Intent(SharePhotoActivity.this,FeedActivity.class);
                                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                             startActivity(intent);
