@@ -3,13 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
+    android:layout_marginBottom="25dp"
     >
 
     <TextView
         android:id="@+id/recyeclerViewName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="100dp"
+        android:layout_marginLeft="30dp"
         android:layout_marginTop="30dp"
         android:text="Name"
         android:textColor="#7636E8"
@@ -17,16 +18,15 @@
 
     <ImageView
         android:id="@+id/recyeclerViewImage"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_gravity="center"
-        android:layout_marginTop="20dp"></ImageView>
+        android:layout_width="350dp"
+        android:layout_height="250dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="2dp"></ImageView>
 
     <TextView
         android:textColor="#7636E8"
         android:textSize="18sp"
-        android:layout_marginTop="30dp"
-        android:layout_gravity="center"
+        android:layout_marginLeft="30dp"
         android:id="@+id/recyeclerViewComment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
