@@ -17,15 +17,22 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.yusuf.photosharingapp.databinding.ActivityMainBinding;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
 public class MainActivity extends AppCompatActivity {
 
     String emailRegex = "^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$";
+    String nameRegex = "^[a-zA-ZğüşıöçĞÜŞİÖÇ]+$";
+
     ActivityMainBinding binding;
     private FirebaseAuth auth;
     private FirebaseFirestore firestore;
-
     String email;
     String password;
+
+    String name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
 
         binding.registerButton.setVisibility(View.GONE);
         binding.textView3.setVisibility(View.GONE);
+        binding.nameText.setVisibility(View.GONE);
 
         FirebaseUser user = auth.getCurrentUser();
         if (user !=null){
@@ -75,18 +83,33 @@ public class MainActivity extends AppCompatActivity {
 
     public void signUp(View view) {
 
+        name = binding.nameText.getText().toString();
         email = binding.emailText.getText().toString();
         password = binding.passwordText.getText().toString();
 
-        if (emailAndPasswordControl(email,password)){
+        if (emailAndPasswordControl(email,password) && nameControl(name)){
             auth.createUserWithEmailAndPassword(email, password).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                 @Override
                 public void onSuccess(AuthResult authResult) {
-                    Toast.makeText(MainActivity.this, "Saved", Toast.LENGTH_LONG).show();
-                    Intent intent = new Intent(MainActivity.this, FeedActivity.class);
-                    startActivity(intent);
 
-                    finish();
+                    Map<String, Object> user = new HashMap<>();
+
+                    user.put("email",email);
+                    user.put("username",name);
+                    user.put("password",password);
+
+                    firestore.collection("users")
+                            .document(auth.getCurrentUser().getUid())
+                            .set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void unused) {
+                                    Toast.makeText(MainActivity.this, "Saved", Toast.LENGTH_LONG).show();
+                                    Intent intent = new Intent(MainActivity.this, FeedActivity.class);
+                                    startActivity(intent);
+                                    finish();
+                                }
+                            });
+
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
@@ -114,6 +137,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void visibleSignUp(View view) {
+        binding.nameText.setVisibility(View.VISIBLE);
         binding.textView3.setVisibility(View.VISIBLE);
         binding.textView2.setVisibility(View.GONE);
         binding.singInButton.setVisibility(View.GONE);
@@ -123,6 +147,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void visibleSignIn(View view) {
+        binding.nameText.setVisibility(View.GONE);
         binding.textView2.setVisibility(View.VISIBLE);
         binding.textView3.setVisibility(View.GONE);
         binding.singInButton.setVisibility(View.VISIBLE);
@@ -140,6 +165,16 @@ public class MainActivity extends AppCompatActivity {
         }
         else {
             return true;
+        }
+    }
+
+    public boolean nameControl(String name){
+        if (name.matches(nameRegex)){
+            return true;
+        }
+        else {
+            Toast.makeText(MainActivity.this,"Name can not be empty!",Toast.LENGTH_LONG).show();
+            return false;
         }
     }
 }

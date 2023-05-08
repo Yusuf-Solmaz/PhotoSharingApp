@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.ImageDecoder;
+import android.graphics.Shader;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -25,13 +26,20 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.yusuf.photosharingapp.databinding.ActivityMainBinding;
 import com.yusuf.photosharingapp.databinding.ActivitySharePhotoBinding;
 
+import java.util.HashMap;
+import java.util.Objects;
 import java.util.Random;
 import java.util.UUID;
 
@@ -48,7 +56,10 @@ public class SharePhotoActivity extends AppCompatActivity {
     private FirebaseAuth auth;
     private StorageReference storageReference;
 
+    CollectionReference usersCollectionRef = FirebaseFirestore.getInstance().collection("users");
+
     Uri imageUri;
+    String userName;
     //Bitmap selectedImage;
 
 
@@ -77,12 +88,24 @@ public class SharePhotoActivity extends AppCompatActivity {
         UUID uuid = UUID.randomUUID();
         String imageName = "images/"+uuid+".jpg";
 
+
+        usersCollectionRef.whereEqualTo("email", auth.getCurrentUser().getEmail()).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                if (!queryDocumentSnapshots.isEmpty()) {
+                    // belge varsa ismi al
+                    DocumentSnapshot documentSnapshot = queryDocumentSnapshots.getDocuments().get(0);
+                    userName = documentSnapshot.getString("username");
+                    // ismi kullan
+                    // ...
+                }
+            }
+        });
+
         if (imageUri != null){
             storageReference.child(imageName).putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    Toast.makeText(SharePhotoActivity.this,"Shared.",Toast.LENGTH_LONG).show();
-
                     StorageReference newStorageReference = storage.getReference(imageName);
                     newStorageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                         @Override
@@ -90,6 +113,39 @@ public class SharePhotoActivity extends AppCompatActivity {
 
                             String imageUrl = uri.toString();
                             String comment = binding.descriptionText.getText().toString();
+
+                            FirebaseUser user = auth.getCurrentUser();
+
+                            String email = user.getEmail();
+
+
+                            HashMap<String, Object> post = new HashMap<>();
+
+                            post.put("name",userName);
+                            post.put("email",email);
+                            post.put("comment",comment);
+                            post.put("imageUrl",imageUrl);
+                            post.put("date", FieldValue.serverTimestamp());
+
+                            firestore.collection("posts")
+                                    .document(user.getUid()).set(post).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void unused) {
+                                            Toast.makeText(SharePhotoActivity.this,"Shared",Toast.LENGTH_LONG).show();
+                                            Intent intent = new Intent(SharePhotoActivity.this,FeedActivity.class);
+                                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                            startActivity(intent);
+
+                                        }
+                                    }).addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Toast.makeText(SharePhotoActivity.this,e.getLocalizedMessage(),Toast.LENGTH_LONG).show();
+
+                                        }
+                                    });
+
+
                         }
                     });
 
