@@ -128,8 +128,8 @@ public class SharePhotoActivity extends AppCompatActivity {
                             post.put("imageUrl",imageUrl);
                             post.put("date", FieldValue.serverTimestamp());
 
-                            firestore.collection("posts")
-                                    .document(user.getUid()).set(post).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            firebaseFirestore.collection("posts")
+                                .add(postData).addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void unused) {
                                             Intent intent = new Intent(SharePhotoActivity.this,FeedActivity.class);
