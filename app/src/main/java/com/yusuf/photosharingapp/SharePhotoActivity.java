@@ -28,6 +28,7 @@ import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -93,11 +94,10 @@ public class SharePhotoActivity extends AppCompatActivity {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 if (!queryDocumentSnapshots.isEmpty()) {
-                    // belge varsa ismi al
+
                     DocumentSnapshot documentSnapshot = queryDocumentSnapshots.getDocuments().get(0);
                     userName = documentSnapshot.getString("username");
-                    // ismi kullan
-                    // ...
+
                 }
             }
         });
@@ -128,19 +128,18 @@ public class SharePhotoActivity extends AppCompatActivity {
                             post.put("imageUrl",imageUrl);
                             post.put("date", FieldValue.serverTimestamp());
 
-                            firebaseFirestore.collection("posts")
-                                .add(postData).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            firestore.collection("posts")
+                                .add(post).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                                         @Override
-                                        public void onSuccess(Void unused) {
+                                        public void onSuccess(DocumentReference documentReference) {
                                             Intent intent = new Intent(SharePhotoActivity.this,FeedActivity.class);
                                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                             startActivity(intent);
-
                                         }
                                     }).addOnFailureListener(new OnFailureListener() {
                                         @Override
                                         public void onFailure(@NonNull Exception e) {
-                                            Toast.makeText(SharePhotoActivity.this,e.getLocalizedMessage(),Toast.LENGTH_LONG).show();
+                                            Toast.makeText(SharePhotoActivity.this, e.getLocalizedMessage(),Toast.LENGTH_LONG).show();
 
                                         }
                                     });
